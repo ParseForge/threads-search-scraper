@@ -136,7 +136,7 @@ try {
     await Actor.pushData([{ error: err.message }]);
 }
 
-await browser.close().catch(() => {});
+try { await browser.close(); } catch {}
 
 if (pushed === 0) await Actor.pushData([{ error: 'No posts extracted.' }]);
 log.info(c.green(`✅ Pushed ${pushed} posts`));
