@@ -59,12 +59,12 @@ const proxyUrl = proxy ? await proxy.newUrl(`session_${Date.now()}`) : undefined
 log.info('🦊 Spawning Camoufox…');
 const browser = await Camoufox({
     headless: 'virtual',
-    geoip: true,
+    proxy: proxyUrl ? { server: proxyUrl } : undefined,
     humanize: true,
-    args: proxyUrl ? ['--proxy-server=' + proxyUrl] : [],
+    geoip: true,
 });
-const context = await browser.newContext();
-const page = await context.newPage();
+const context = browser.contexts?.()[0] || browser;
+const page = context.pages?.()[0] || (await browser.newPage());
 
 const captured: any[] = [];
 page.on('response', async (response: any) => {
