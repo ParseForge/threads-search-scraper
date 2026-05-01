@@ -26,7 +26,7 @@ Three filtering workflows in a single run:
 
 Each row reports the username, post short code (extracted from the post URL), full post URL, post text up to 1500 characters, posted timestamp from the `<time>` element, profile URL, and a scrape timestamp.
 
-> 💡 **Why it matters:** Threads is now where many tech and media voices post first. Brand teams need to track mentions there, journalists watch it for breaking takes, and marketers measure influencer reach. The HTTP layer alone returns nothing useful, but a properly-fingerprinted browser session unlocks the public feed.
+> 💡 **Why it matters:** Threads is now where many tech and media voices post first. Brand teams need to track mentions there, journalists watch it for breaking takes, and marketers measure influencer reach. The HTTP layer alone returns nothing useful, but a properly-fingerprinted browser session can read the public feed.
 
 ---
 
