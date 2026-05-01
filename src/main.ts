@@ -83,13 +83,13 @@ async function fetchProfile(username: string): Promise<any[]> {
     const url = `https://www.threads.net/@${username}`;
     log.info(`📡 ${url}`);
     try {
-        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
-        await sleep(7000);
-        await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {});
+        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+        await sleep(3500);
+        await page.waitForLoadState('networkidle', { timeout: 8000 }).catch(() => {});
         // Scroll to load more posts
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 3; i++) {
             await page.evaluate(() => window.scrollBy(0, document.body.scrollHeight));
-            await sleep(1500);
+            await sleep(900);
         }
 
         const posts = await page.evaluate(() => {
