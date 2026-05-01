@@ -17,7 +17,7 @@
       "type": "array",
       "description": "Threads usernames (without the @). Examples: zuck, mosseri, openai.",
       "editor": "stringList",
-      "prefill": ["zuck", "mosseri", "openai", "mkbhd", "apify", "instagram", "threads", "nytimes", "cnn", "theverge", "techcrunch", "wired", "garyvee", "sahilbloom", "naval", "balajis", "aiwarper", "alexlieberman", "morningbrew", "lennysan", "patrickc", "elonmusk_threads", "brian_armstrong", "vitalik", "altman"],
+      "prefill": ["zuck", "mosseri", "openai", "mkbhd", "apify", "instagram", "threads", "nytimes", "cnn", "theverge", "techcrunch", "wired", "garyvee", "sahilbloom"],
       "sectionCaption": "Search",
       "sectionDescription": "Camoufox + residential proxy fetches each public profile and extracts the latest posts."
     },

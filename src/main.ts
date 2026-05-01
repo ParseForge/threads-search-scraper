@@ -111,9 +111,17 @@ async function fetchProfileOnPage(p: any, username: string): Promise<any[]> {
 
 let pushed = 0;
 try {
-    const PAGE_PARALLEL = 4;
+    const PAGE_PARALLEL = 3;
     const pages: any[] = [page];
-    while (pages.length < PAGE_PARALLEL) pages.push(await context.newPage());
+    while (pages.length < PAGE_PARALLEL) {
+        const p = await context.newPage();
+        // Warmup new page before parallel work
+        try {
+            await p.goto('https://www.threads.net/', { waitUntil: 'domcontentloaded', timeout: 30000 });
+            await sleep(1500);
+        } catch {}
+        pages.push(p);
+    }
 
     let queueIdx = 0;
     async function worker(p: any): Promise<void> {
