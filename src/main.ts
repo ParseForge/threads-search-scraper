@@ -79,17 +79,30 @@ page.on('response', async (response: any) => {
     } catch {}
 });
 
-async function fetchProfileOnPage(p: any, username: string): Promise<any[]> {
+async function fetchProfileAggressive(username: string, targetPosts: number): Promise<any[]> {
     const url = `https://www.threads.net/@${username}`;
     try {
-        await p.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
-        await sleep(2500);
-        await p.waitForLoadState('networkidle', { timeout: 6000 }).catch(() => {});
-        for (let i = 0; i < 3; i++) {
-            await p.evaluate(() => window.scrollBy(0, document.body.scrollHeight));
-            await sleep(800);
+        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+        await sleep(2000);
+        await page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {});
+
+        let lastCount = 0;
+        let stableRounds = 0;
+        for (let i = 0; i < 15; i++) {
+            const currentCount = await page.evaluate(() => document.querySelectorAll('div[data-pressable-container="true"], article, div[role="article"]').length);
+            if (currentCount >= targetPosts) break;
+            if (currentCount === lastCount) {
+                stableRounds += 1;
+                if (stableRounds >= 2) break;
+            } else {
+                stableRounds = 0;
+            }
+            lastCount = currentCount;
+            await page.evaluate(() => window.scrollBy(0, document.body.scrollHeight * 1.5));
+            await sleep(700);
         }
-        const posts = await p.evaluate(() => {
+
+        const posts = await page.evaluate(() => {
             const out: any[] = [];
             const articles = document.querySelectorAll('div[data-pressable-container="true"], article, div[role="article"]');
             articles.forEach((el) => {
@@ -111,44 +124,28 @@ async function fetchProfileOnPage(p: any, username: string): Promise<any[]> {
 
 let pushed = 0;
 try {
-    const PAGE_PARALLEL = 3;
-    const pages: any[] = [page];
-    while (pages.length < PAGE_PARALLEL) {
-        const p = await context.newPage();
-        // Warmup new page before parallel work
-        try {
-            await p.goto('https://www.threads.net/', { waitUntil: 'domcontentloaded', timeout: 30000 });
-            await sleep(1500);
-        } catch {}
-        pages.push(p);
-    }
-
-    let queueIdx = 0;
-    async function worker(p: any): Promise<void> {
-        while (queueIdx < usernames.length && pushed < effectiveMaxItems) {
-            const username = usernames[queueIdx++];
-            log.info(`📡 @${username}`);
-            const posts = await fetchProfileOnPage(p, username);
-            log.info(`   +${posts.length} for @${username}`);
-            for (const post of posts) {
-                if (pushed >= effectiveMaxItems) break;
-                const codeMatch = post.url ? post.url.match(/\/post\/([^/?#]+)/) : null;
-                const record = {
-                    username,
-                    postCode: codeMatch ? codeMatch[1] : null,
-                    postUrl: post.url,
-                    text: post.text,
-                    postedAt: post.postedAt,
-                    profileUrl: `https://www.threads.net/@${username}`,
-                    scrapedAt: new Date().toISOString(),
-                };
-                if (isPayPerEvent) await Actor.pushData([record], 'result-item');
-                else await Actor.pushData([record]);
-                pushed += 1;
-            }
+    for (const username of usernames) {
+        if (pushed >= effectiveMaxItems) break;
+        log.info(`📡 @${username}`);
+        const posts = await fetchProfileAggressive(username, effectiveMaxItems - pushed + 5);
+        log.info(`   +${posts.length} for @${username}`);
+        for (const post of posts) {
+            if (pushed >= effectiveMaxItems) break;
+            const codeMatch = post.url ? post.url.match(/\/post\/([^/?#]+)/) : null;
+            const record = {
+                username,
+                postCode: codeMatch ? codeMatch[1] : null,
+                postUrl: post.url,
+                text: post.text,
+                postedAt: post.postedAt,
+                profileUrl: `https://www.threads.net/@${username}`,
+                scrapedAt: new Date().toISOString(),
+            };
+            if (isPayPerEvent) await Actor.pushData([record], 'result-item');
+            else await Actor.pushData([record]);
+            pushed += 1;
         }
     }
-    await Promise.all(pages.map((p) => worker(p)));
 } catch (err: any) {
     log.error(err.message);
     await Actor.pushData([{ error: err.message }]);
