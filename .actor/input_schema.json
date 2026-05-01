@@ -1,0 +1,33 @@
+{
+  "title": "Threads Profile Scraper",
+  "type": "object",
+  "schemaVersion": 1,
+  "properties": {
+    "maxItems": {
+      "title": "Max Items",
+      "type": "integer",
+      "description": "Free users: Limited to 10 items (preview). Paid users: Optional, max 1,000,000.",
+      "editor": "number",
+      "prefill": 10,
+      "minimum": 1,
+      "maximum": 1000000
+    },
+    "usernames": {
+      "title": "Threads usernames",
+      "type": "array",
+      "description": "Threads usernames (without the @). Examples: zuck, mosseri, openai.",
+      "editor": "stringList",
+      "prefill": ["zuck", "mosseri"],
+      "sectionCaption": "Search",
+      "sectionDescription": "Camoufox + residential proxy fetches each public profile and extracts the latest posts."
+    },
+    "proxyConfiguration": {
+      "title": "Proxy configuration",
+      "type": "object",
+      "description": "US residential proxy is recommended.",
+      "editor": "proxy",
+      "prefill": { "useApifyProxy": true, "apifyProxyGroups": ["RESIDENTIAL"], "apifyProxyCountry": "US" }
+    }
+  },
+  "required": []
+}

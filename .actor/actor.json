@@ -1,0 +1,10 @@
+{
+  "actorSpecification": 1,
+  "name": "threads-search-scraper",
+  "title": "Threads Profile Scraper",
+  "description": "Pull public Threads posts from any profile: post text, like count, reply count, posted date, and author. Provide a username and the scraper extracts the latest public posts. Export to JSON, CSV, or Excel for social listening and trend research.",
+  "version": "1.0",
+  "buildTag": "latest",
+  "dockerfile": "./Dockerfile",
+  "input": "./input_schema.json"
+}
